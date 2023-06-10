@@ -20,7 +20,7 @@ const LogIn = () => {
           password,
         })
         .then((response) => {
-          const token = response.data.accessToken;
+          const token = response.data.access_token;
           localStorage.setItem("token", token);
           navigate("/todo");
         })

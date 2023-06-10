@@ -3,65 +3,134 @@ import { useNavigate } from "react-router-dom";
 import { Todo } from "../types";
 import TodoItem from "../components/todo-item";
 
-const TodoList: React.FC = () => {
+import { backUrl } from "../config";
+import axios from "axios";
+
+const TodoList = () => {
   const navigate = useNavigate();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<string>("");
   const [editing, setEditing] = useState<number | null>(null);
 
-  const addTodo = (e: any) => {
-    e.preventDefault();
-    setTodos(todos.concat({ text: newTodo, completed: false }));
-    setNewTodo("");
-  };
-
-  const deleteTodo = useCallback((index: number) => {
-    setTodos((prevTodos) => prevTodos.filter((_, i) => i !== index));
-  }, []);
-
-  const updateTodo = useCallback((index: number, updatedTodo: Todo) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo, i) => (i === index ? updatedTodo : todo))
-    );
-    setEditing(null);
-  }, []);
-
-  const toggleCompleted = useCallback((index: number) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo, i) =>
-        i === index ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  }, []);
-
-  const cancelEditing = useCallback(() => {
-    setEditing(null);
-  }, []);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (!token) {
       navigate("/signin");
     } else {
-      const storedTodos = JSON.parse(localStorage.getItem("todos")!) || [];
-      setTodos(storedTodos);
+      getTodos();
     }
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+  const getTodos = useCallback(async () => {
+    const response = await axios.get(`${backUrl}/todos`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setTodos(response.data);
+  }, [token]);
+
+  const addTodo = useCallback(
+    async (e: any) => {
+      e.preventDefault();
+      const response = await axios.post(
+        `${backUrl}/todos`,
+        { todo: newTodo },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = response.data;
+      setTodos([...todos, data]);
+    },
+    [newTodo, token, todos]
+  );
+
+  const deleteTodo = useCallback(
+    async (id: number) => {
+      await axios.delete(`${backUrl}/todos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setTodos(todos.filter((todo) => todo.id !== id));
+    },
+    [token, todos]
+  );
+
+  const toggleCompleted = useCallback(
+    async (id: number, isCompleted: boolean) => {
+      const response = await axios.patch(
+        `${backUrl}/todos/${id}`,
+        { isCompleted: !isCompleted },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = response.data;
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, isCompleted: data.isCompleted } : todo
+        )
+      );
+    },
+    [token, todos]
+  );
+
+  const cancelEditing = useCallback((id: number) => {
+    setEditing(id);
+  }, []);
+
+  const updateTodo = useCallback(
+    async (id: number, updatedTodo: string) => {
+      const response = await axios.put(
+        `${backUrl}/todos/${id}`,
+        { todo: updatedTodo },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = response.data;
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, todo: data.todo } : todo
+        )
+      );
+      setEditing(null);
+    },
+    [token, todos]
+  );
 
   return (
-    <form>
-      <input
-        data-testid="new-todo-input"
-        value={newTodo}
-        onChange={(e) => setNewTodo(e.target.value)}
-      />
-      <button data-testid="new-todo-add-button" type="submit" onClick={addTodo}>
-        추가
-      </button>
+    <div className="container mx-auto p-4">
+      <h1>Todo List</h1>
+      <form className="flex justify-between mb-4">
+        <input
+          data-testid="new-todo-input"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+          className="shadow appearance-none p-2 w-full border border-gray-300 rounded focus:outline-blue-500"
+          placeholder="Add Todo"
+        />
+        <button
+          data-testid="new-todo-add-button"
+          type="submit"
+          onClick={addTodo}
+          className="bg-blue-500 text-white font-bold p-2 rounded ml-2"
+        >
+          추가
+        </button>
+      </form>
       <ul>
         {todos.map((todo, index) => (
           <li key={index}>
@@ -78,7 +147,7 @@ const TodoList: React.FC = () => {
           </li>
         ))}
       </ul>
-    </form>
+    </div>
   );
 };
 

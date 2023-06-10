@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
@@ -35,6 +35,13 @@ const SignUp = () => {
   const onChangePassword = useCallback((e: any) => {
     setPassword(e.target.value);
     validateEmailAndPassword();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/todo");
+    }
   }, []);
 
   const handleSignUp = useCallback(

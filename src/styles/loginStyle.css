@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.login-container {
+  @apply min-h-screen bg-gray-100 flex flex-col justify-center sm:py-12;
+}
+
+.login-form {
+  @apply p-10 mx-auto md:w-full md:max-w-md;
+}
+
+.title {
+  @apply font-bold text-center text-2xl mb-5;
+}
+
+.email-label,
+.password-label {
+  @apply font-semibold text-sm text-gray-600 block pb-1;
+}
+
+.input-email,
+.input-password {
+  @apply border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full;
+}

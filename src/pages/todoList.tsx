@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "../types";
-import TodoItem from "../components/todo-item";
-
+import TodoItem from "../components/TodoList/todo-item";
 import { backUrl } from "../config";
 import axios from "axios";
+import TodoForm from "../components/TodoList/todo-form";
 
 const TodoList = () => {
   const navigate = useNavigate();
@@ -22,18 +22,20 @@ const TodoList = () => {
     }
   }, []);
 
+  // 데이터 가져오기
   const getTodos = useCallback(async () => {
     const response = await axios.get(`${backUrl}/todos`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(response.data);
     setTodos(response.data);
   }, [token]);
 
+  // 할 일 추가
   const addTodo = useCallback(
-    async (e: any) => {
-      e.preventDefault();
+    async (newTodo: string) => {
       const response = await axios.post(
         `${backUrl}/todos`,
         { todo: newTodo },
@@ -50,6 +52,7 @@ const TodoList = () => {
     [newTodo, token, todos]
   );
 
+  // 할 일 삭제
   const deleteTodo = useCallback(
     async (id: number) => {
       await axios.delete(`${backUrl}/todos/${id}`, {
@@ -62,37 +65,17 @@ const TodoList = () => {
     [token, todos]
   );
 
-  const toggleCompleted = useCallback(
-    async (id: number, isCompleted: boolean) => {
-      const response = await axios.patch(
-        `${backUrl}/todos/${id}`,
-        { isCompleted: !isCompleted },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = response.data;
-      setTodos(
-        todos.map((todo) =>
-          todo.id === id ? { ...todo, isCompleted: data.isCompleted } : todo
-        )
-      );
-    },
-    [token, todos]
-  );
-
-  const cancelEditing = useCallback((id: number) => {
-    setEditing(id);
+  // 수정 취소
+  const cancelEditing = useCallback(() => {
+    setEditing(null);
   }, []);
 
+  // 할 일 수정
   const updateTodo = useCallback(
-    async (id: number, updatedTodo: string) => {
+    async (id: number, updatedTodo: string, isCompleted: boolean) => {
       const response = await axios.put(
         `${backUrl}/todos/${id}`,
-        { todo: updatedTodo },
+        { todo: updatedTodo, isCompleted },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,7 +86,9 @@ const TodoList = () => {
       const data = response.data;
       setTodos(
         todos.map((todo) =>
-          todo.id === id ? { ...todo, todo: data.todo } : todo
+          todo.id === id
+            ? { ...todo, todo: data.todo, isCompleted: data.isCompleted }
+            : todo
         )
       );
       setEditing(null);
@@ -113,32 +98,16 @@ const TodoList = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1>Todo List</h1>
-      <form className="flex justify-between mb-4">
-        <input
-          data-testid="new-todo-input"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          className="shadow appearance-none p-2 w-full border border-gray-300 rounded focus:outline-blue-500"
-          placeholder="Add Todo"
-        />
-        <button
-          data-testid="new-todo-add-button"
-          type="submit"
-          onClick={addTodo}
-          className="bg-blue-500 text-white font-bold p-2 rounded ml-2"
-        >
-          추가
-        </button>
-      </form>
+      <h1 className=" mb-3 text-5xl font-bold text-center text-blue-400">
+        Todo List
+      </h1>
+      <TodoForm onAdd={addTodo} />
       <ul>
         {todos.map((todo, index) => (
-          <li key={index}>
+          <li key={todo.id}>
             <TodoItem
               todo={todo}
-              index={index}
               editing={editing}
-              onToggleCompleted={toggleCompleted}
               onDelete={deleteTodo}
               onEdit={setEditing}
               onUpdate={updateTodo}

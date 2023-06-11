@@ -1,22 +1,18 @@
 import React, { VFC, memo, useCallback, useState } from "react";
-import { Todo } from "../types";
+import { Todo } from "../../types";
 
 interface Props {
   todo: Todo;
-  index: number;
   editing: number | null;
-  onToggleCompleted: (id: number, isCompleted: boolean) => void;
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
-  onUpdate: (id: number, updatedTodo: string) => void;
-  onCancel: (id: number) => void;
+  onUpdate: (id: number, updatedTodo: string, isCompleted: boolean) => void;
+  onCancel: () => void;
 }
 
 const TodoItem: VFC<Props> = ({
   todo,
-  index,
   editing,
-  onToggleCompleted,
   onDelete,
   onEdit,
   onUpdate,
@@ -25,17 +21,21 @@ const TodoItem: VFC<Props> = ({
   const [updatedText, setUpdatedText] = useState(todo.todo);
 
   const handleUpdate = useCallback(() => {
-    onUpdate(todo.id, updatedText);
+    onUpdate(todo.id, updatedText, todo.isCompleted);
   }, [onUpdate, todo.id, updatedText]);
 
-  if (editing === index) {
+  const toggleCompleted = useCallback(() => {
+    onUpdate(todo.id, updatedText, !todo.isCompleted);
+  }, [onUpdate, todo.id, updatedText, todo.isCompleted]);
+
+  if (editing === todo.id) {
     return (
       <div className="flex mb-4">
         <input
           data-testid="modify-input"
           value={updatedText}
           onChange={(e) => setUpdatedText(e.target.value)}
-          className="p-2 w-full border border-gray-300 rounded"
+          className="p-2 w-full border border-gray-300 rounded focus:outline-blue-500"
         />
         <button
           data-testid="submit-button"
@@ -46,7 +46,7 @@ const TodoItem: VFC<Props> = ({
         </button>
         <button
           data-testid="cancel-button"
-          onClick={() => onCancel(todo.id)}
+          onClick={() => onCancel()}
           className="bg-red-500 text-white font-bold p-2 rounded ml-2"
         >
           취소
@@ -61,7 +61,7 @@ const TodoItem: VFC<Props> = ({
         <input
           type="checkbox"
           checked={todo.isCompleted}
-          onChange={() => onToggleCompleted(todo.id, todo.isCompleted)}
+          onChange={toggleCompleted}
           className="mr-2"
         />
         <span className={todo.isCompleted ? "line-through" : ""}>
@@ -70,7 +70,7 @@ const TodoItem: VFC<Props> = ({
       </label>
       <button
         data-testid="modify-button"
-        onClick={() => onEdit(index)}
+        onClick={() => onEdit(todo.id)}
         className="bg-yellow-500 text-white font-bold p-2 rounded ml-auto"
       >
         수정

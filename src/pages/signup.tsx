@@ -1,55 +1,43 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { backUrl } from "../config";
+import CustomButton from "../components/button";
+import useInput from "../hooks/useInput";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, onChangeEmail] = useInput("");
+  const [password, onChangePassword] = useInput("");
   const [signUpError, setSignUpError] = useState("");
   const [validationError, setValidationError] = useState("");
   const [disabled, setDisabled] = useState(false);
   const navigate = useNavigate();
 
-  const validateEmailAndPassword = () => {
-    if (!email.includes("@")) {
-      setValidationError("유효한 이메일 주소를 입력해주세요.");
-      setDisabled(true);
-      return;
-    }
-
-    if (password.length < 8) {
-      setValidationError("비밀번호는 최소 8자 이상이어야 합니다.");
-      setDisabled(true);
-      return;
-    }
-
-    setValidationError("");
-    setDisabled(false);
-  };
-
-  const onChangeEmail = (e: any) => {
-    setEmail(e.target.value);
-    validateEmailAndPassword();
-  };
-
-  const onChangePassword = useCallback((e: any) => {
-    setPassword(e.target.value);
-    validateEmailAndPassword();
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/todo");
-    }
-  }, []);
-
   const handleSignUp = useCallback(
-    (e: any) => {
+    (e: FormEvent) => {
       e.preventDefault();
+
+      if (!email.includes("@")) {
+        setValidationError("유효한 이메일 주소를 입력해주세요.");
+        setDisabled(true);
+        return;
+      }
+
+      if (password.length < 8) {
+        setValidationError("비밀번호는 최소 8자 이상이어야 합니다.");
+        setDisabled(true);
+        return;
+      }
+
       axios
         .post(
-          "https://www.pre-onboarding-selection-task.shop/auth/signup",
+          `${backUrl}/auth/signup`,
           {
             email,
             password,
@@ -63,6 +51,7 @@ const SignUp = () => {
         .then((response) => {
           console.log(response);
           if (response.status === 201) {
+            alert("회원가입이 완료되었습니다!");
             navigate("/signin");
           }
         })
@@ -74,15 +63,22 @@ const SignUp = () => {
     [email, password]
   );
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/todo");
+    }
+  }, []);
+
   return (
-    <section className="bg-gray-50">
-      <form className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <div className="bg-gray-50">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
               Sign Up
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form className="space-y-4 md:space-y-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-900">
                   Your email
@@ -112,17 +108,18 @@ const SignUp = () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                 />
               </div>
-              {signUpError && <div>{signUpError}</div>}
-              {validationError && <div>{validationError}</div>}
-              <button
+              {signUpError && <div className="text-red-100">{signUpError}</div>}
+              {validationError && (
+                <div className="text-red-500">{validationError}</div>
+              )}
+              <CustomButton
                 type="submit"
                 onClick={handleSignUp}
                 disabled={disabled}
-                className="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
-                data-testid="signup-button"
+                testId="signup-button"
               >
                 Create an account
-              </button>
+              </CustomButton>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link
@@ -135,8 +132,8 @@ const SignUp = () => {
             </form>
           </div>
         </div>
-      </form>
-    </section>
+      </div>
+    </div>
   );
 };
 

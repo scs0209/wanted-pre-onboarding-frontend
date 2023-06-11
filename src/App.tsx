@@ -1,11 +1,23 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import LogIn from "./pages/login";
 import SignUp from "./pages/signup";
 import TodoList from "./pages/todoList";
 import "./index.css";
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (token) {
+      navigate("/todo");
+    } else {
+      navigate("/signin");
+    }
+  }, []);
+
   return (
     <div>
       <Routes>

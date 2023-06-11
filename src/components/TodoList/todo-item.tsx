@@ -25,8 +25,10 @@ const TodoItem: VFC<Props> = ({
   }, [onUpdate, todo.id, updatedText]);
 
   const toggleCompleted = useCallback(() => {
-    onUpdate(todo.id, updatedText, !todo.isCompleted);
-  }, [onUpdate, todo.id, updatedText, todo.isCompleted]);
+    if (editing !== todo.id) {
+      onUpdate(todo.id, todo.todo, !todo.isCompleted);
+    }
+  }, [editing, todo.id, todo.todo, todo.isCompleted, onUpdate]);
 
   if (editing === todo.id) {
     return (
@@ -62,7 +64,7 @@ const TodoItem: VFC<Props> = ({
           type="checkbox"
           checked={todo.isCompleted}
           onChange={toggleCompleted}
-          className="mr-2"
+          className="mr-2 "
         />
         <span className={todo.isCompleted ? "line-through" : ""}>
           {todo.todo}

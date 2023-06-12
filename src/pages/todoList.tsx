@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, FormEvent } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "../types";
 import TodoItem from "../components/TodoList/todo-item";

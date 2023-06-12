@@ -64,7 +64,7 @@ const TodoItem: VFC<Props> = ({
           type="checkbox"
           checked={todo.isCompleted}
           onChange={toggleCompleted}
-          className="mr-2 "
+          className="mr-2"
         />
         <span className={todo.isCompleted ? "line-through" : ""}>
           {todo.todo}

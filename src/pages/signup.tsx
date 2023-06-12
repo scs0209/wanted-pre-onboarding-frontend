@@ -1,11 +1,5 @@
 import axios from "axios";
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { backUrl } from "../config";
 import CustomButton from "../components/button";

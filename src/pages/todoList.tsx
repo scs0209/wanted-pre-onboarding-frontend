@@ -21,7 +21,6 @@ const TodoList = () => {
       getTodos();
     }
   }, []);
-  console.log(token);
 
   // 데이터 가져오기
   const getTodos = useCallback(async () => {

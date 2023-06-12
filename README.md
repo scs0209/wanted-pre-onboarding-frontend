@@ -10,6 +10,19 @@
 
 원티드 프리온보딩 과제
 
+---
+
+## 데모영상 링크
+> **url** : https://web-wanted-pre-onboarding-frontend-p8xrq2mlfsc6kg2.sel3.cloudtype.app/
+
+---
+
+## 데모 영상
+![데모영상](https://github.com/scs0209/wanted-pre-onboarding-frontend/assets/110822847/deddb832-97af-416d-aa82-bc18c032fe5a)
+![데모영상2](https://github.com/scs0209/wanted-pre-onboarding-frontend/assets/110822847/89c876e4-a13e-4698-a0fd-ba0ad9f27c35)
+
+---
+
 ## 시작 가이드
 
 ### Requirements

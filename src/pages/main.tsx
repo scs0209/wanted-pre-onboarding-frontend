@@ -1,6 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Main = () => {
+  const token = localStorage.getItem("token");
+
   return (
     <section className="text-gray-600 body-font">
       <div className="container px-5 py-24 mx-auto">
@@ -17,6 +20,18 @@ const Main = () => {
             Hello, If you want to use todo-list, log in, please.
           </p>
           <span className="inline-block h-1 w-10 rounded bg-indigo-500 mt-8 mb-6"></span>
+          <div>
+            {token && (
+              <Link to="/todo">
+                <button
+                  type="button"
+                  className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+                >
+                  go Todo
+                </button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </section>

@@ -40,6 +40,7 @@ const LogIn = () => {
           const token = response.data.access_token;
           localStorage.setItem("token", token);
           navigate("/todo");
+          window.location.reload();
         })
         .catch((error) => {
           console.log(error);

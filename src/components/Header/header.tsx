@@ -1,12 +1,18 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Header = () => {
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
     window.location.reload();
+  }, []);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+    console.log(token, storedToken);
   }, []);
 
   return (
@@ -22,7 +28,7 @@ const Header = () => {
         </Link>
         {token ? (
           <button
-            className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0"
+            className="inline-flex text-gray-400 items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 font-bold"
             onClick={handleLogout}
           >
             Logout

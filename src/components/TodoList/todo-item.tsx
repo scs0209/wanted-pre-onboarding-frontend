@@ -30,6 +30,11 @@ const TodoItem: VFC<Props> = ({
     }
   }, [editing, todo.id, todo.todo, todo.isCompleted, onUpdate]);
 
+  const handleCancel = useCallback(() => {
+    onCancel();
+    setUpdatedText(todo.todo);
+  }, [onCancel, todo.todo]);
+
   if (editing === todo.id) {
     return (
       <div className="flex mb-4">
@@ -48,7 +53,7 @@ const TodoItem: VFC<Props> = ({
         </button>
         <button
           data-testid="cancel-button"
-          onClick={() => onCancel()}
+          onClick={handleCancel}
           className="bg-red-500 text-white font-bold p-2 rounded ml-2"
         >
           취소

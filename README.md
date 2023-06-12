@@ -23,6 +23,7 @@ In the project directory, you can run:
 
 ```bash
 $ git clone https://github.com/scs0209/wanted-pre-onboarding-frontend.git
+$ cd myBlog
 ```
 
 #### Frontend

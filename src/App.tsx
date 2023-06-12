@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 import LogIn from "./pages/login";
 import SignUp from "./pages/signup";
 import TodoList from "./pages/todoList";
 import "./index.css";
-import Header from "./components/Header/header";
 import Main from "./pages/main";
+import Header from "./components/Header/header";
 
 function App() {
   return (
